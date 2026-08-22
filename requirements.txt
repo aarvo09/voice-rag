@@ -5,3 +5,4 @@ psutil
 fastapi
 uvicorn
 python-multipart
+faiss-cpu
