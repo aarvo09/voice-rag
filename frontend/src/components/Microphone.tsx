@@ -3,6 +3,9 @@ import axios from 'axios';
 import { Mic, Loader2, StopCircle } from 'lucide-react';
 import type { VoiceQueryResponse } from '../types';
 
+const API_BASE_URL =
+  (import.meta.env.VITE_API_BASE_URL as string | undefined) ?? 'http://localhost:8001';
+
 interface MicrophoneProps {
   onResult: (result: VoiceQueryResponse) => void;
   onError: (error: string) => void;
@@ -58,7 +61,7 @@ export const Microphone: React.FC<MicrophoneProps> = ({ onResult, onError, onCle
       const formData = new FormData();
       formData.append('audio', audioBlob, 'recording.wav');
 
-      const response = await axios.post<VoiceQueryResponse>('http://localhost:8000/api/voice-query', formData, {
+      const response = await axios.post<VoiceQueryResponse>(`${API_BASE_URL}/api/voice-query`, formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },

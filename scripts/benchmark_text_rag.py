@@ -100,9 +100,13 @@ def main():
         config=llm_config
     )
 
+    stt_lats = []
     retrieval_lats = []
     llm_lats = []
+    grounding_lats = []
+    total_rag_lats = []
     total_lats = []
+
 
     success_count = 0
     grounded_count = 0
@@ -120,9 +124,13 @@ def main():
         res = rag_service.run(q_text, dry_run=args.dry_run)
         telem = res.get("telemetry", {})
 
-        retrieval_lats.append(telem.get("retrieval_ms", 0.0))
+        stt_lats.append(telem.get("stt_ms", 0.0))
+        retrieval_lats.append(telem.get("retrieval_ms", 0.0) + telem.get("retrieval_guardrail_ms", 0.0))
         llm_lats.append(telem.get("llm_ms", 0.0))
-        total_lats.append(telem.get("total_ms", 0.0))
+        grounding_lats.append(telem.get("grounding_guardrail_ms", 0.0))
+        total_rag_lats.append(telem.get("total_ms", 0.0))
+        total_lats.append(telem.get("total_ms", 0.0))  # End-to-end is roughly total_ms for text RAG
+
 
         if res.get("status") == "success" or res.get("status") == "dry_run":
             success_count += 1
@@ -148,28 +156,50 @@ def main():
         })
 
     total_q = len(queries)
+    stt_pct = calc_percentiles(stt_lats)
     ret_pct = calc_percentiles(retrieval_lats)
     llm_pct = calc_percentiles(llm_lats)
+    grd_pct = calc_percentiles(grounding_lats)
+    rag_pct = calc_percentiles(total_rag_lats)
     tot_pct = calc_percentiles(total_lats)
 
+    output = []
+    output.append(f"Sample Count: {total_q}\n")
+    output.append("STT:")
+    output.append(f"P50: {stt_pct['p50']} ms\nP70: {stt_pct['p70']} ms\nP100: {stt_pct['p100']} ms\n")
+    
+    output.append("Retrieval:")
+    output.append(f"P50: {ret_pct['p50']} ms\nP70: {ret_pct['p70']} ms\nP100: {ret_pct['p100']} ms\n")
+    
+    output.append("Generation:")
+    output.append(f"P50: {llm_pct['p50']} ms\nP70: {llm_pct['p70']} ms\nP100: {llm_pct['p100']} ms\n")
+    
+    output.append("Grounding:")
+    output.append(f"P50: {grd_pct['p50']} ms\nP70: {grd_pct['p70']} ms\nP100: {grd_pct['p100']} ms\n")
+    
+    output.append("Total RAG:")
+    output.append(f"P50: {rag_pct['p50']} ms\nP70: {rag_pct['p70']} ms\nP100: {rag_pct['p100']} ms\n")
+    
+    output.append("Total End-to-End:")
+    output.append(f"P50: {tot_pct['p50']} ms\nP70: {tot_pct['p70']} ms\nP100: {tot_pct['p100']} ms\n")
+
+    report_text = "\n".join(output)
     print("\n==================================================")
     print("BENCHMARK SUMMARY RESULTS")
     print("==================================================")
-    print(f"Evaluated Queries:    {total_q}")
-    print(f"Dry-Run Mode:         {args.dry_run}")
-    print(f"Provider / Model:     {args.provider} / {model_name}")
-    print(f"Success Count / Rate: {success_count}/{total_q} ({round(success_count/total_q*100, 1)}%)")
-    print(f"Grounded Rate:        {round(grounded_count/total_q*100, 1)}%")
-    print(f"Refusal Rate:         {round(refusal_count/total_q*100, 1)}%")
-    print(f"Valid Citation Rate:  {round(valid_citation_count/total_q*100, 1)}%")
-    print(f"Total Retries:        {total_retries}")
-    print(f"API Errors:           {api_errors}")
-    print("--------------------------------------------------")
-    print("LATENCY PERCENTILES (ms):")
-    print(f"  Retrieval-only:     P50={ret_pct['p50']} ms | P70={ret_pct['p70']} ms | P100={ret_pct['p100']} ms")
-    print(f"  LLM Generation:     P50={llm_pct['p50']} ms | P70={llm_pct['p70']} ms | P100={llm_pct['p100']} ms")
-    print(f"  Total Text-RAG:     P50={tot_pct['p50']} ms | P70={tot_pct['p70']} ms | P100={tot_pct['p100']} ms")
+    print(report_text)
     print("==================================================\n")
+
+    report_path = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "reports", "text_rag_live_benchmark.md")
+    os.makedirs(os.path.dirname(report_path), exist_ok=True)
+    with open(report_path, "w") as f:
+        f.write("# Text RAG Live Benchmark\n\n")
+        f.write(f"Provider: {args.provider}\n")
+        f.write(f"Model: {model_name}\n\n")
+        f.write("```text\n")
+        f.write(report_text)
+        f.write("```\n")
+    print(f"Report saved to {report_path}")
 
 
 if __name__ == "__main__":

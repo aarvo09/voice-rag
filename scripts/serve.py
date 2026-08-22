@@ -13,10 +13,10 @@ from app.api.routes import router
 
 app = FastAPI(title="HH Goa 2026 Voice RAG API")
 
-# Configure CORS for local development (frontend runs on 5173, backend on 8000)
+# Configure CORS for local development across Vite port fallbacks (5173, 5174, etc.)
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173", "http://127.0.0.1:5173"],
+    allow_origin_regex=r"https?://(localhost|127\.0\.0\.1|0\.0\.0\.0)(:\d+)?",
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -25,4 +25,4 @@ app.add_middleware(
 app.include_router(router)
 
 if __name__ == "__main__":
-    uvicorn.run(app, host="0.0.0.0", port=8000)
+    uvicorn.run(app, host="0.0.0.0", port=8001)

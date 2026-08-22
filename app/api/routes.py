@@ -18,6 +18,7 @@ from app.generation.config import LLMConfig
 from app.generation.llm import get_llm_provider
 from app.guardrails.policy import GuardrailPolicy, GuardrailPolicyConfig
 from app.pipeline.text_rag import TextRAGService
+from app.observability.latency_buffer import latency_buffer
 
 logger = logging.getLogger(__name__)
 
@@ -110,6 +111,26 @@ async def voice_query(audio: UploadFile = File(...)):
     total_latency_ms = round((end_e2e - start_e2e) * 1000.0, 2)
     telemetry = res.get("telemetry", {})
     
+    # Record to latency buffer
+    stt_ms = stt_result.latency_ms
+    retrieval_ms = telemetry.get("retrieval_ms", 0) + telemetry.get("retrieval_guardrail_ms", 0)
+    generation_ms = telemetry.get("llm_ms", 0)
+    grounding_ms = telemetry.get("grounding_guardrail_ms", 0)
+    total_rag_ms = telemetry.get("total_ms", 0)
+    status = res.get("status", "error")
+    llm_called = generation_ms > 0
+    
+    latency_buffer.add_record({
+        "stt_ms": stt_ms,
+        "retrieval_ms": retrieval_ms,
+        "generation_ms": generation_ms,
+        "grounding_ms": grounding_ms,
+        "total_rag_ms": total_rag_ms,
+        "total_e2e_ms": total_latency_ms,
+        "status": status,
+        "llm_called": llm_called
+    })
+    
     return {
         "transcript": stt_result.transcript,
         "language": lang,
@@ -127,3 +148,7 @@ async def voice_query(audio: UploadFile = File(...)):
         },
         "retrieved_documents": res.get("retrieved_documents", [])
     }
+
+@router.get("/api/latency/summary")
+def get_latency_summary(sample_size: int = 10):
+    return latency_buffer.get_summary(sample_size=sample_size)
