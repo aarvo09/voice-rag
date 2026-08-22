@@ -1,0 +1,17 @@
+{
+  "index_type": "IndexFlatIP",
+  "metric": "inner_product",
+  "dimension": 384,
+  "vector_count": 1000,
+  "embedding_model": "intfloat/multilingual-e5-small",
+  "normalized": true,
+  "source_embedding_file": "data/processed/dev_embeddings.npy",
+  "creation_time": "2026-08-22T16:42:20.833044",
+  "file_size_bytes": 1536045,
+  "memory_metrics": {
+    "memory_before_mb": 83.65,
+    "memory_after_mb": 87.11,
+    "memory_delta_mb": 3.46
+  },
+  "build_time_s": 0.0017
+}

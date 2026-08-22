@@ -1,0 +1,21 @@
+{
+  "project_roots": [
+    "."
+  ],
+  "include": [
+    "app",
+    "scripts",
+    "tests"
+  ],
+  "exclude": [
+    "**/__pyrefly_virtual__/**",
+    "/__pyrefly_virtual__/**",
+    "**/__pyrefly_virtual__",
+    ".venv",
+    "**/__pycache__"
+  ],
+  "python_interpreter": ".venv/bin/python",
+  "search_paths": [
+    ".venv/lib/python3.14/site-packages"
+  ]
+}

@@ -1,0 +1,16 @@
+@import "tailwindcss";
+
+@theme {
+  --color-hhgoa-brand: #ea580c; /* vibrant warm orange/red */
+  --color-hhgoa-bg: #fdfcfa;
+  --color-hhgoa-border: #171717;
+}
+
+body {
+  background-color: var(--color-hhgoa-bg);
+  color: #171717;
+  font-family: "Inter", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  margin: 0;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}

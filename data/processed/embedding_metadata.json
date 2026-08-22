@@ -1,0 +1,23 @@
+{
+  "model_name": "intfloat/multilingual-e5-small",
+  "embedding_dimension": 384,
+  "document_count": 1000,
+  "normalized": true,
+  "device": "cpu",
+  "batch_size": 32,
+  "creation_timestamp": "2026-08-22T16:34:12.425593",
+  "input_corpus": "data/processed/dev_corpus.parquet",
+  "output_embedding_file": "data/processed/dev_embeddings.npy",
+  "file_size_bytes": 1536128,
+  "memory_metrics": {
+    "memory_before_mb": 62.36,
+    "memory_after_model_load_mb": 1422.8,
+    "memory_after_embedding_mb": 1934.52,
+    "memory_delta_mb": 1872.16
+  },
+  "timing_metrics": {
+    "model_load_time_ms": 10676.54,
+    "embedding_time_ms": 45090.87,
+    "total_time_ms": 55767.41
+  }
+}

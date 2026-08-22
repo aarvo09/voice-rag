@@ -1,0 +1,19 @@
+{
+  "venvPath": ".",
+  "venv": ".venv",
+  "include": [
+    "app",
+    "scripts",
+    "tests"
+  ],
+  "exclude": [
+    "**/__pyrefly_virtual__/**",
+    "/__pyrefly_virtual__/**",
+    "**/__pyrefly_virtual__",
+    ".venv",
+    "**/__pycache__"
+  ],
+  "extraPaths": [
+    ".venv/lib/python3.14/site-packages"
+  ]
+}

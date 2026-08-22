@@ -1,0 +1,23 @@
+[tool.pyrefly]
+project_roots = ["."]
+include = ["app", "scripts", "tests"]
+exclude = [
+    "**/__pyrefly_virtual__/**",
+    "/__pyrefly_virtual__/**",
+    "**/__pyrefly_virtual__",
+    ".venv",
+    "**/__pycache__"
+]
+python_interpreter = ".venv/bin/python"
+
+[tool.pyright]
+venvPath = "."
+venv = ".venv"
+include = ["app", "scripts", "tests"]
+exclude = [
+    "**/__pyrefly_virtual__/**",
+    "/__pyrefly_virtual__/**",
+    "**/__pyrefly_virtual__",
+    ".venv",
+    "**/__pycache__"
+]

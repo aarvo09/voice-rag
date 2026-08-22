@@ -1,0 +1,16 @@
+{
+  "algorithm": "BM25Okapi",
+  "corpus_count": 1000,
+  "tokenizer": "Unicode-aware whitespace tokenizer with Devanagari/ASCII punctuation stripping and lowercasing",
+  "k1": 1.5,
+  "b": 0.75,
+  "source_corpus": "data/processed/dev_corpus.parquet",
+  "creation_timestamp": "2026-08-22T16:45:33.717752",
+  "file_size_bytes": 879667,
+  "memory_metrics": {
+    "memory_before_mb": 84.23,
+    "memory_after_mb": 166.03,
+    "memory_delta_mb": 81.79
+  },
+  "build_time_s": 0.1564
+}
